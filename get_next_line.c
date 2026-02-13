@@ -1,63 +1,48 @@
-int	check_buff(char *s)
+char	*read_and_join(char *stored, int fd)
 {
-	int	i;
+	char	*buffer;
+	char	*temp;
+	int	bytes_read;
 
-	i = 0;
-	while(s[i])
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+    
+	buffer = malloc(BUFFER_SIZE + 1);
+	if (!buffer)
+		return (NULL);
+	while (bytes_read > 0)
 	{
-		if (s[i] != '\n')
-			return (1);
-		i++;
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read == -1)
+	{
+		free(buffer);
+			return (NULL);
 	}
-	return (0);
+	buffer[bytes_read] = '\0';
+	temp = ft_strjoin(stored, buffer);
+	free(stored);
+	stored = temp;
+	if (ft_strchr(stored, '\n'))
+		break;
+	}
+	free(buffer);
+	return (stored);
 }
-void	copy_str(char *a, char *b)
-{
-	int	i;
-	static int	j;
 
-	i = 0;
-	j = 0;
-	while(a)
-	{
-		a[i] = b[i + j];
-		i++;
-		j++;
-	}
-}
-char	*result(char *c, char *d,static char e)
-{
-	int	i;
-
-	i = 0;
-	while (c[i] != '\n')
-	{
-		c[i] = d[i];
-		i++;
-	}
-	c[i] = d[i];
-	i++;
-	while (c[i + j])
-	{
-		c[i + j] = e[j];
-		j++;
-	}
-	return(d);
-}
-	
 char *get_next_line(int fd)
 {
-	static char	*box;
-	char	temp;
-	char	buff;
-	int	i;
-
-	while(!check_buff(temp))
-	{
-		read(fd, buff, nbyte);
-		copy_str(buff, temp);
-		if(check_buff(temp))
-		return (result(temp, nline, box));
-	}
-	return (result(temp, nline, box));
-} 
+    static char *stored;
+    char        *line;
+    
+    if (fd < 0 || BUFFER_SIZE <= 0)
+        return (NULL);
+    
+    stored = read_and_join(fd, stored);
+    if (!stored)
+        return (NULL);
+    
+    line = extract_line(stored);
+    stored = update_stored(stored);
+    
+    return (line);
+}
