@@ -6,7 +6,7 @@
 /*   By: akhalidi <akhalidi@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/13 23:30:14 by akhalidi          #+#    #+#             */
-/*   Updated: 2026/02/13 23:36:07 by akhalidi         ###   ########.fr       */
+/*   Updated: 2026/02/14 19:58:58 by akhalidi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,17 @@ char	*read_and_join(int fd, char *stored)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read == -1)
-		{
-			free(buffer);
-			return (NULL);
-		}
+			return (free(buffer), free(stored), NULL);
+		if (bytes_read == 0)
+			break ;
 		buffer[bytes_read] = '\0';
 		temp = ft_strjoin(stored, buffer);
+		if (!temp)
+			return (free(buffer), free(stored), NULL);
 		free(stored);
 		stored = temp;
 	}
-	free(buffer);
-	return (stored);
+	return (free(buffer), stored);
 }
 
 char	*extract_line(char *stored)
@@ -46,7 +46,7 @@ char	*extract_line(char *stored)
 	char	*indice;
 	int		position;
 
-	if (!stored)
+	if (!stored || !stored[0])
 		return (NULL);
 	indice = ft_strchr(stored, '\n');
 	if (indice)
