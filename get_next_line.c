@@ -10,7 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-char	*read_and_join(char *stored, int fd)
+#include "get_next_line.h"
+
+char	*read_and_join(int fd, char *stored)
 {
 	char	*buffer;
 	char	*temp;
@@ -60,35 +62,6 @@ char	*update_stored(char *stored)
 	char	*new_stored;
 	char	*newline_ptr;
 	int		position;
-
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	buffer = malloc(BUFFER_SIZE + 1);
-	if (!buffer)
-		return (NULL);
-	bytes_read = 1;
-	while (bytes_read > 0 && !ft_strchr(stored, '\n'))
-	{
-		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read == -1)
-		{
-			free(buffer);
-			return (NULL);
-		}
-		buffer[bytes_read] = '\0';
-		temp = ft_strjoin(stored, buffer);
-		free(stored);
-		stored = temp;
-	}
-	free(buffer);
-	return (stored);
-}
-
-char	*update_stored(char *stored)
-{
-	char	*new_stored;
-	char	*newline_ptr;
-	int		position;
 	int		bytes;
 
 	if (!stored)
@@ -100,7 +73,7 @@ char	*update_stored(char *stored)
 		return (NULL);
 	}
 	position = newline_ptr - stored;
-	bytes = ft_strlen(stored - poition - 1);
+	bytes = ft_strlen(stored) - position - 1;
 	new_stored = ft_substr(stored, position + 1, bytes);
 	free(stored);
 	return (new_stored);
